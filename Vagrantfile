@@ -20,6 +20,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network :forwarded_port, guest: 5601, host: 5601
   config.ssh.forward_agent = true
 
+  config.vm.synced_folder ".", "/vagrant"
   config.vm.synced_folder ".", "/srv"
   
   # Sync materials
