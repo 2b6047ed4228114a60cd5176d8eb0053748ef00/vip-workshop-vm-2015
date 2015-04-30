@@ -26,7 +26,7 @@ How to Install
 0. Install [Vagrant](http://downloads.vagrantup.com/), preferably the
    latest 1.7.2 version. Less than 1.1 will not work.
 1. Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads).
-2. Check out `https://github.com/2b6047ed4228114a60cd5176d8eb0053748ef00/vip-workshop-vm`
+2. Check out `https://github.com/2b6047ed4228114a60cd5176d8eb0053748ef00/vip-workshop-vm-2015`
 3. Run `vagrant up`.
 4. Wait :-)
 5. Map `10.86.73.81` to `vip-workshop.dev` in your hosts file or in your local
