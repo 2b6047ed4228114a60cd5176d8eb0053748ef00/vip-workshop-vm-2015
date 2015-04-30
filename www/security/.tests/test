@@ -1,0 +1,92 @@
+#!/bin/bash
+
+set -e
+
+DIR=$( dirname "$0" 2> /dev/null )
+DIR=$( "$DIR"/absdir "$DIR" 2> /dev/null )
+TEST=${1?POST_SLUG}
+TYPE=${2?TEST_TYPE}
+TESTER="$DIR"/test-"$TEST"-"$TYPE"
+RESULT=""
+
+ROOT=$( dirname "$DIR" )
+
+# Yup.
+WP_HOME=$( cat "$ROOT"/wp-config.php | egrep 'WP_HOME' | php -R 'eval( $argn );' -E 'echo WP_HOME;' )
+
+PATH="$PATH":"$ROOT"/bin
+
+function finish {
+	case $? in
+	0)
+		echo -e "\033[1;32mPASSED"'!'"\033[0m"
+		echo "$TEST_RESULT"
+		if [ -n "$RESULT" ]
+		then
+			echo
+			echo "$RESULT"
+			echo
+		fi
+		;;
+	202)
+		echo -e "\033[1;32mPASSED...MOSTLY"'!'"\033[0m"
+		echo "$TEST_RESULT"
+		echo
+		echo "It looks like some sneaky vulnerabilities still exist."
+		echo "If you have the time, try to fix them before you move on to the next exercise."
+		if [ -n "$RESULT" ]
+		then
+			echo
+			echo "$RESULT"
+			echo
+		fi
+		;;
+	*)
+		echo -e "\033[1;31mFAILED"'!'"\033[0m"
+		echo "$TEST_RESULT"
+		;;
+	esac
+}
+
+trap finish EXIT
+
+echo WP_HOME="$WP_HOME" WP_ROOT="$ROOT" "$TESTER" > /dev/stderr
+
+printf "\033[1mTesting\033[0m: $TEST ... "
+
+ls "$TESTER" &> /dev/null || ( echo "No such test '$TEST'" && exit 1 )
+
+POST=$( wp post list --name="$TEST" --field=ID 2> /dev/null )
+if [ -z "$POST" ]
+then
+	echo "No post for '$TEST'"
+	exit 1
+fi
+
+COMMENTS=$( wp comment list --post_id="$POST" --meta_key=_test_type --meta_value="$TYPE" --format=ids 2> /dev/null )
+
+set +e
+TEST_RESULT=$( WP_HOME="$WP_HOME" WP_ROOT="$ROOT" "$TESTER" )
+TEST_RESULT_STATUS=$?
+set +e
+if [ $TEST_RESULT_STATUS -ne 0 ] && [ $TEST_RESULT_STATUS -ne 202 ]
+then
+	exit $TEST_RESULT_STATUS
+fi
+
+for COMMENT in $COMMENTS
+do
+	set +e
+		wp comment approve "$COMMENT" &> /dev/null
+		NEXT_POST_SLUG=$( wp comment-meta get "$COMMENT" _next_post 2> /dev/null )
+		NEXT_POST=$( wp post list --name="$NEXT_POST_SLUG" --field=ID )
+	set -e
+	if [ -n "$NEXT_POST" ]
+	then
+		wp post update "$NEXT_POST" --post_status=publish &> /dev/null
+	fi
+
+	RESULT=$( wp comment get "$COMMENT" --field=content )
+done
+
+exit $TEST_RESULT_STATUS

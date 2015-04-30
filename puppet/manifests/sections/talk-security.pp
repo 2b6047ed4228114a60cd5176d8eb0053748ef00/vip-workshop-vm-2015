@@ -1,10 +1,8 @@
-class { 'nodejs':
-  version => 'stable',
-  make_install => false,
-} ->
-
-package { 'phantomjs':
-  provider => npm
+# Use the nodejs npm puppet-package provider so we get nicer error messages if something goes wrong
+exec { 'npm install -g phantomjs':
+  user    => 'root',
+  unless  => 'which phantomjs',
+  require => Class['nodejs'],
 }
 
 mysql::grant { 'security':

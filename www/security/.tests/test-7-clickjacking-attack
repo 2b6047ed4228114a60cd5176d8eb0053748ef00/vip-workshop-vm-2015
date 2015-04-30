@@ -1,0 +1,112 @@
+#!/usr/bin/env phantomjs
+
+var wp = require( './wp' );
+var fs = require('fs');
+var page = wp.page();
+
+var f = fs.open( wp.dir + 'attacks/7-clickjacking.html', 'r' );
+var attack = wp.fix_url( f.read() );
+f.close();
+
+page.viewportSize = {
+	width: 800,
+	height: 800
+};
+page.clipRect = {
+	top: 0,
+	left: 0,
+	width: 800,
+	height: 800
+};
+
+function getLinkCoords( text ) {
+	return page.evaluate( function( text ) {
+		var links = document.getElementsByTagName( 'a' );
+		var link;
+		var i;
+		var bounds;
+		var left;
+		var top;
+
+		for ( i = 0; i < links.length; i++ ) {
+			if ( text === links[i].textContent ) {
+				link = links[i];
+				break;
+			}
+		}
+
+		if ( ! link ) {
+			return [ 0, 0 ];
+		}
+
+		bounds = link.getBoundingClientRect();
+
+		left = parseInt( bounds.left + ( bounds.right - bounds.left ) / 2, 10 );
+		top = parseInt( bounds.top + ( bounds.bottom - bounds.top ) / 2, 10 );
+
+		return [ left, top ];
+	}, text );
+}
+
+page.onLoadFinished = function() {
+	page.onLoadFinished = function() {};
+
+	setTimeout( function() {
+		var bCoords, kCoords;
+
+		bCoords = getLinkCoords( 'BU' + 'NNY!' );
+		console.log( "Found BU" + "NNY! @", bCoords );
+
+		kCoords = getLinkCoords( 'KI' + 'TTY!' );
+		console.log( "Found KI" + "TTY! @", kCoords );
+
+		page.sendEvent( 'click', bCoords[0], bCoords[1] );
+		page.sendEvent( 'click', kCoords[0], kCoords[1] );
+
+		page.evaluate( function( viewport, bunny, kitty ) {
+			function drawSquare( left, width, top, height ) {
+				var span = document.createElement( 'span' );
+
+				span.style.position = 'absolute';
+				span.style.display = 'block';
+				span.style.outline = '1px solid red';
+				span.style.left = left.toString() + 'px';
+				span.style.width = width.toString() + 'px';
+				span.style.top = top.toString() + 'px';
+				span.style.height = height.toString() + 'px';
+				span.style.zIndex = '10000000000000000';
+
+				document.body.appendChild( span );
+			}
+
+			drawSquare( bunny[0], 1, bunny[1], 1 );
+			drawSquare( kitty[0], 1, kitty[1], 1 );
+			drawSquare( 1, viewport.width - 2, 1, viewport.height - 2 );
+		}, page.viewportSize, bCoords, kCoords );
+
+		page.render( wp.dir + 'attacks/7-clickjacking.png' );
+
+		setTimeout( function() {
+			page.open( wp.url, function() {
+				var color = page.evaluate( function() {
+					return jQuery( 'div.site' ).css( 'background-color' );
+				} );
+
+				color = color.replace( /\s/g, '' );
+				
+				switch ( color ) {
+				case 'rgb(222,250,206)':
+				case 'rgba(222,250,206,1)':
+				case '#deface':
+					phantom.exit();
+					break;
+				default:
+					phantom.exit( 1 );
+					break;
+				}
+			} );
+		}, 2000 );
+	}, 2000 );
+};
+
+page.setContent( attack, 'http://example.com/' );

@@ -1,4 +1,4 @@
-$php_version = '5.4.26-1+deb.sury.org~precise+1'
+$php_version = '5.4.39-1+deb.sury.org~precise+2'
 
 include php
 include apt
@@ -22,7 +22,6 @@ class {
     require => Apt::Source['php54'];
   'php::fpm':;
   'php::pear':;
-  'php::phpunit':;
 
   # Extensions
   'php::extension::apc':

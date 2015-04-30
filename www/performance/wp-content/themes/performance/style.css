@@ -1,0 +1,57 @@
+/**
+ * Theme Name: VIP Performance
+ * Description: Performance, performance, performance.
+ * Template: twentyfifteen
+ */
+
+.results-app {
+    text-align: center;
+}
+
+#start-fetching {
+    width: 100%;
+    display: block;
+}
+
+#results {
+    overflow: hidden;
+    margin-bottom: 50px;
+}
+
+.result {
+    width: 50%;
+    float: left;
+    text-align: center;
+}
+
+.result .number {
+    font-size: 72px;
+}
+
+#request-log {
+    padding: 0;
+    margin: 10px;
+    border-top: 2px solid #005082;
+    border-bottom: 2px solid #005082;
+    list-style: none;
+
+    height: 200px;
+    overflow-y: scroll;
+}
+
+#request-log li:first-child {
+    color: #fff;
+    background: #3d596d;
+}
+
+#request-log li {
+    padding: 10px;
+}
+
+#request-log li.miss {
+    background: #d94f4f;
+}
+
+#request-log li.hit {
+    background: #4ab866;
+}

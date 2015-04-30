@@ -1,5 +1,5 @@
 # File Managed by Puppet
- 
+
 server {
     listen <%= @port %>;
     server_name <%= @name %> <%= @serveraliases %>;
@@ -14,6 +14,16 @@ server {
         fastcgi_pass   127.0.0.1:9000;
         fastcgi_index  index.php;
         include        /etc/nginx/fastcgi_params;
+    }
+
+    location ~ '^/rest-api/mma' {
+        index index.php index.html;
+        try_files $uri $uri/ /rest-api/mma/index.php?$args;
+    }
+
+    location ~ '^/rest-api/fishing' {
+        index index.php index.html;
+        try_files $uri $uri/ /rest-api/fishing/index.php?$args;
     }
 
     location ~ '^/([a-z-]+)' {
