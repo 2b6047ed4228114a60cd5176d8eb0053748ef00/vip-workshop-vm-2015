@@ -52,6 +52,12 @@ wp::command { 'post create stampede':
   require  => Wp::Command['theme activate performance'],
 }
 
+wp::command { 'post create stampede':
+  command  => 'post create --post_type=page --post_title="Ads" --post_status=publish --post_name=ads',
+  location => '/srv/www/performance',
+  require  => Wp::Command['theme activate performance'],
+}
+
 wp::command { 'post generate --count=5000':
   command  => 'post generate --count=5000',
   location => '/srv/www/performance',

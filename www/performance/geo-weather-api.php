@@ -7,7 +7,11 @@
 //sleep( 120 );
 
 // If you want to kill the API, uncomment below.
-//http_response_code( 500 ); die();
+/*
+sleep( 5 );
+http_response_code( 500 );
+die();
+*/
 
 // This would likely be doing some location specific stuff, but go for simplicity.
 

@@ -9,6 +9,7 @@ define( 'LIVE_UPDATES_CACHE_TIME', 10 ); // seconds; this needs to be low so we 
 require( __DIR__ . '/includes/geo.php' );
 require( __DIR__ . '/includes/misc.php' );
 require( __DIR__ . '/includes/json.php' );
+require( __DIR__ . '/includes/ads.php' );
 
 add_action( 'wp_enqueue_scripts', function() {
 	wp_register_style( 'parent-style', get_template_directory_uri() . '/style.css' );
