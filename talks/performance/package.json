@@ -1,0 +1,10 @@
+{
+  "name": "vip-training-days-performance",
+  "description": "Slides for the Performance workshop.",
+  "dependencies": {
+    "reveal-md": "0.0.18"
+  },
+  "scripts": {
+    "start": "reveal-md 0-performance.md --theme=night"
+  }
+}
