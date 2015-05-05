@@ -9,9 +9,8 @@ Purpose
 The goal of this VM is to simplify and standardize the setup across all
 attendees and speakers.
 
-No more last-minute permissions debugging or people, who didn't bother
-to install web server, MySQL, memcached and a several more pieces of
-software needed for the presentations.
+No more last-minute permissions debugging or people who didn't bother
+to install software needed for the presentations such as a web server, MySQL or memcached.
 
 Vagrant
 -------
